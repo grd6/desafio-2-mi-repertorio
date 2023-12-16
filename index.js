@@ -47,8 +47,25 @@ app.get("/canciones", (req, res) => {
 });
 
 //actualizar
+app.put("/canciones/:id", (req, res) => {
+  const { id } = req.params;
+  const editCancion = req.body;
+  const canciones = JSON.parse(fs.readFileSync("repertorio.json", "utf-8"));
+  const index = canciones.findIndex((p) => p.id == id);
+  canciones[index] = editCancion;
+  fs.writeFileSync("repertorio.json", JSON.stringify(canciones));
+  res.send("Canción modificada con éxito");
+});
 
 //Borrar
+app.delete("/canciones/:id", (req, res) => {
+  const { id } = req.params;
+  const canciones = JSON.parse(fs.readFileSync("repertorio.json", "utf-8"));
+  const index = canciones.findIndex((p) => p.id == id);
+  canciones.splice(index, 1);
+  fs.writeFileSync("repertorio.json", JSON.stringify(canciones));
+  res.send("Canción eliminada con éxito");
+});
 
 app.listen(PORT, () => {
   console.log("Server on 🦾");
