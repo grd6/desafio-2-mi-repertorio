@@ -4,6 +4,7 @@ import cors from "cors";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import { error } from "console";
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
@@ -24,16 +25,20 @@ app.get("/", (req, res) => {
 });
 //insertar
 app.post("/canciones", (req, res) => {
-  const newCancion = req.body;
-  console.log(newCancion);
-  const canciones = JSON.parse(fs.readFileSync("repertorio.json", "utf-8"));
-  canciones.push(newCancion);
-  console.log(canciones);
-  fs.writeFileSync(
-    "repertorio.json",
-    JSON.stringify(canciones)
-  );
+  try {
+    const { titulo, artista, tono } = req.body;
+    if (!titulo || !artista || !tono) {
+      console.error("Todos los campos son requeridos");
+      return res.status(400).json({ error: "Todos los campos son requeridos" });
+    }
 
+    const newCancion = req.body;
+    console.log(newCancion);
+    const canciones = JSON.parse(fs.readFileSync("repertorio.json", "utf-8"));
+    canciones.push(newCancion);
+    console.log(canciones);
+    fs.writeFileSync("repertorio.json", JSON.stringify(canciones));
+  } catch (error) {}
 });
 //leer
 app.get("/canciones", (req, res) => {
@@ -43,13 +48,7 @@ app.get("/canciones", (req, res) => {
 
 //actualizar
 
-
-
-
 //Borrar
-
-
-
 
 app.listen(PORT, () => {
   console.log("Server on 🦾");
